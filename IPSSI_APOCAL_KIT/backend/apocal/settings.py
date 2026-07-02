@@ -180,7 +180,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "APOCAL'IPSSI 2026 — EduTutor IA API",
     "DESCRIPTION": "Plateforme de révision personnalisée à base de LLM. "
     "Auth, génération de quiz, historique de progression.",
-    "VERSION": "0.1.0",
+    "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "CONTACT": {
         "name": "Mohamed Amine EL AFRIT",

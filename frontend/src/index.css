@@ -61,6 +61,78 @@
   .dark .border-slate-300 {
     border-color: #475569;
   }
+
+  /* Survols neutres */
+  .dark .hover\:bg-slate-50:hover {
+    background-color: #334155;
+  }
+
+  /* Liens accentués */
+  .dark .hover\:text-indigo-600:hover {
+    color: #818cf8;
+  }
+  .dark .text-indigo-600 {
+    color: #818cf8;
+  }
+
+  /* Alertes succès / erreur / avertissement / info */
+  .dark .bg-emerald-50 {
+    background-color: rgb(6 78 59 / 0.35);
+  }
+  .dark .bg-rose-50 {
+    background-color: rgb(136 19 55 / 0.35);
+  }
+  .dark .bg-amber-50 {
+    background-color: rgb(120 53 15 / 0.35);
+  }
+  .dark .bg-indigo-50 {
+    background-color: rgb(49 46 129 / 0.35);
+  }
+  .dark .text-emerald-900 {
+    color: #a7f3d0;
+  }
+  .dark .text-rose-900 {
+    color: #fecdd3;
+  }
+  .dark .text-amber-900 {
+    color: #fde68a;
+  }
+  .dark .text-indigo-900 {
+    color: #c7d2fe;
+  }
+  .dark .text-emerald-700 {
+    color: #6ee7b7;
+  }
+  .dark .text-rose-700 {
+    color: #fda4af;
+  }
+  .dark .text-amber-700,
+  .dark .text-amber-800 {
+    color: #fcd34d;
+  }
+  .dark .text-emerald-800 {
+    color: #6ee7b7;
+  }
+  .dark .text-rose-800 {
+    color: #fda4af;
+  }
+
+  /* Badges */
+  .dark .bg-emerald-100 {
+    background-color: rgb(6 78 59 / 0.5);
+  }
+  .dark .bg-rose-100 {
+    background-color: rgb(136 19 55 / 0.5);
+  }
+  .dark .bg-amber-100 {
+    background-color: rgb(120 53 15 / 0.5);
+  }
+  .dark .border-amber-200 {
+    border-color: #92400e;
+  }
+  .dark .border-rose-200 {
+    border-color: #9f1239;
+  }
 }
 
 @layer components {

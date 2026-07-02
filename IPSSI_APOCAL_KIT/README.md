@@ -1,7 +1,7 @@
 # IPSSI_APOCAL_KIT 🚀
 
 [![CI](https://github.com/melafrit/IPSSI_APOCAL_KIT/actions/workflows/ci.yml/badge.svg)](https://github.com/melafrit/IPSSI_APOCAL_KIT/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.2.0-indigo)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-indigo)](./VERSION)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-amber.svg)](./LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![React](https://img.shields.io/badge/react-18-cyan.svg)](https://react.dev/)

@@ -17,11 +17,14 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import ThemeSelector from '@/components/ThemeSelector';
 import { changePassword, deleteAccount, updateProfile } from '@/api/auth';
 import { getApiErrorMessage } from '@/api/errors';
 
 export default function ProfilePage() {
   const { user, refresh } = useAuth();
+  const { theme, preference } = useTheme();
   const navigate = useNavigate();
 
   // --- Zone 1 : informations ---
@@ -101,6 +104,15 @@ export default function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-slate-900">Mon profil</h1>
+
+      <section className="card">
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">Apparence</h2>
+        <p className="text-sm text-slate-600 mb-4">
+          Mode actuel : <strong>{theme === 'dark' ? 'sombre' : 'clair'}</strong>
+          {preference === 'system' && ' (selon votre appareil)'}
+        </p>
+        <ThemeSelector />
+      </section>
 
       {/* Zone 1 : informations */}
       <section className="card">

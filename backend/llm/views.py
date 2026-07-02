@@ -124,6 +124,8 @@ class GenerateQuizView(APIView):
         serializer = GenerateQuizSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         title = serializer.validated_data["title"]
+        subject = (serializer.validated_data.get("subject") or "").strip()
+        class_name = (serializer.validated_data.get("class_name") or "").strip()
         pdf_file = serializer.validated_data.get("pdf")
         source_text = (serializer.validated_data.get("source_text") or "").strip()
 
@@ -151,6 +153,9 @@ class GenerateQuizView(APIView):
                 user=request.user,
                 title=title,
                 source_text=source_text,
+                subject=subject,
+                class_name=class_name,
+                status=Quiz.Status.DRAFT,
             )
             for i, q in enumerate(questions_data, start=1):
                 Question.objects.create(

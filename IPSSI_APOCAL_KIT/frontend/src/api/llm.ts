@@ -20,11 +20,15 @@ export async function ping(): Promise<LLMPing> {
  */
 export async function generateQuiz(input: {
   title: string;
+  subject?: string;
+  class_name?: string;
   pdf?: File;
   source_text?: string;
 }): Promise<Quiz> {
   const form = new FormData();
   form.append('title', input.title);
+  if (input.subject) form.append('subject', input.subject);
+  if (input.class_name) form.append('class_name', input.class_name);
   if (input.pdf) form.append('pdf', input.pdf);
   if (input.source_text) form.append('source_text', input.source_text);
 

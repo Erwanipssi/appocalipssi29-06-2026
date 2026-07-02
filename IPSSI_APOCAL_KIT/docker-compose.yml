@@ -60,7 +60,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "${BACKEND_HOST_PORT:-8000}:8000"
     volumes:
       - ./backend:/app
     depends_on:

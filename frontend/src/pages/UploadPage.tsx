@@ -6,6 +6,8 @@ import { getApiErrorMessage } from '@/api/errors';
 export default function UploadPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('');
+  const [className, setClassName] = useState('');
   const [mode, setMode] = useState<'pdf' | 'text'>('text');
   const [pdf, setPdf] = useState<File | null>(null);
   const [sourceText, setSourceText] = useState('');
@@ -19,10 +21,12 @@ export default function UploadPage() {
     try {
       const quiz = await generateQuiz({
         title,
+        subject,
+        class_name: className,
         pdf: mode === 'pdf' ? (pdf ?? undefined) : undefined,
         source_text: mode === 'text' ? sourceText : undefined,
       });
-      navigate(`/quiz/${quiz.id}`);
+      navigate(`/quiz/${quiz.id}/review`);
     } catch (err) {
       setError(getApiErrorMessage(err, 'Échec de la génération.'));
     } finally {
@@ -54,6 +58,29 @@ export default function UploadPage() {
             placeholder="Ex. Histoire — Révolution française"
             className="input"
           />
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Matière</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Ex. Communication"
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Classe</label>
+            <input
+              type="text"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              placeholder="Ex. BTS Com 1A"
+              className="input"
+            />
+          </div>
         </div>
 
         <div>

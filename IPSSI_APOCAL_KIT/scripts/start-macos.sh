@@ -176,7 +176,7 @@ echo "  Frontend : http://localhost:3000   (ou FRONTEND_HOST_PORT du .env)"
 echo "  API      : http://localhost:8000/api"
 echo "  API docs : http://localhost:8000/api/docs"
 echo ""
-echo "  Compte de demo (si seed execute) : test / motdepasse123"
+echo "  Compte de demo (si seed execute) : test@apocal.local / motdepasse123"
 echo ""
 
 # ---------- 9. Logs ----------

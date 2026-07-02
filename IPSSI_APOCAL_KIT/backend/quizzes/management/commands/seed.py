@@ -4,7 +4,6 @@ Commande `python manage.py seed`
 Insère un user de test + 2 quizz d'exemple pour démarrer rapidement.
 
 Identifiants après seed :
-    Username : test
     Email    : test@apocal.local
     Password : motdepasse123
 """
@@ -14,21 +13,29 @@ from django.core.management.base import BaseCommand
 
 from quizzes.models import Question, Quiz
 
+DEMO_EMAIL = "test@apocal.local"
+DEMO_PASSWORD = "motdepasse123"
+
 
 class Command(BaseCommand):
     help = "Insère 1 utilisateur de test et 2 quizz d'exemple."
 
     def handle(self, *args, **options):
-        user, created = User.objects.get_or_create(
-            username="test",
-            defaults={"email": "test@apocal.local", "first_name": "Test", "last_name": "User"},
-        )
-        if created:
-            user.set_password("motdepasse123")
+        # Le login se fait par email (username = email en interne).
+        user = User.objects.filter(email__iexact=DEMO_EMAIL).first()
+        if user is None:
+            user = User.objects.filter(username="test").first()
+        if user is None:
+            user = User(username=DEMO_EMAIL, email=DEMO_EMAIL, first_name="Test", last_name="User")
+            user.set_password(DEMO_PASSWORD)
             user.save()
-            self.stdout.write(self.style.SUCCESS("✅ User 'test' créé."))
+            self.stdout.write(self.style.SUCCESS(f"✅ User '{DEMO_EMAIL}' créé."))
         else:
-            self.stdout.write("ℹ️  User 'test' existe déjà.")
+            user.username = DEMO_EMAIL
+            user.email = DEMO_EMAIL
+            user.set_password(DEMO_PASSWORD)
+            user.save()
+            self.stdout.write(f"ℹ️  User '{DEMO_EMAIL}' mis à jour.")
 
         # Supprime les quizz existants du user test pour éviter les doublons
         Quiz.objects.filter(user=user).delete()
@@ -184,4 +191,4 @@ class Command(BaseCommand):
             )
         )
         self.stdout.write(self.style.SUCCESS("\n🎉 Seed terminé."))
-        self.stdout.write("   Connectez-vous : test / motdepasse123")
+        self.stdout.write(f"   Connectez-vous : {DEMO_EMAIL} / {DEMO_PASSWORD}")

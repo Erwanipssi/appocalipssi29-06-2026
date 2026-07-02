@@ -1,44 +1,76 @@
 /**
- * Contexte de thème clair / sombre (MVP2 — Lot 6).
+ * Contexte de thème clair / sombre.
  *
- * [Note pédagogique] On pilote le mode sombre via une classe `dark` ajoutée sur
- * <html> (configuré dans tailwind.config.js avec darkMode: 'class'). Le choix de
- * l'utilisateur est mémorisé dans localStorage ; à défaut, on suit la préférence
- * système (prefers-color-scheme).
+ * Trois modes : clair, sombre, ou système (prefers-color-scheme).
+ * La classe `dark` sur <html> pilote Tailwind (darkMode: 'class').
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-type Theme = 'light' | 'dark';
+export type ThemePreference = 'light' | 'dark' | 'system';
+export type ResolvedTheme = 'light' | 'dark';
 
 type ThemeContextValue = {
-  theme: Theme;
+  /** Thème effectivement appliqué (résolu). */
+  theme: ResolvedTheme;
+  /** Préférence utilisateur (stockée). */
+  preference: ThemePreference;
+  setPreference: (preference: ThemePreference) => void;
+  /** Bascule rapide clair ↔ sombre (ignore le mode système). */
   toggleTheme: () => void;
 };
 
 const STORAGE_KEY = 'edututor-theme';
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-/** Détermine le thème initial : préférence stockée, sinon préférence système. */
-function getInitialTheme(): Theme {
+function getStoredPreference(): ThemePreference {
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
-  const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-  return prefersDark ? 'dark' : 'light';
+  if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
+  return 'system';
+}
+
+function resolveTheme(preference: ThemePreference): ResolvedTheme {
+  if (preference === 'light' || preference === 'dark') return preference;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyThemeClass(theme: ResolvedTheme) {
+  document.documentElement.classList.toggle('dark', theme === 'dark');
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [preference, setPreferenceState] = useState<ThemePreference>(getStoredPreference);
+  const [theme, setTheme] = useState<ResolvedTheme>(() => resolveTheme(getStoredPreference()));
 
-  // Applique la classe `dark` sur <html> et persiste le choix à chaque changement.
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    const resolved = resolveTheme(preference);
+    setTheme(resolved);
+    applyThemeClass(resolved);
+    localStorage.setItem(STORAGE_KEY, preference);
+  }, [preference]);
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+  useEffect(() => {
+    if (preference !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => {
+      const resolved = resolveTheme('system');
+      setTheme(resolved);
+      applyThemeClass(resolved);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, [preference]);
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
+  const setPreference = (next: ThemePreference) => setPreferenceState(next);
+
+  const toggleTheme = () => {
+    setPreferenceState(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, preference, setPreference, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 export function useTheme(): ThemeContextValue {

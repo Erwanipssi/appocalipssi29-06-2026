@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getQuiz, submitAnswers, type Quiz, type AnswerResult } from '@/api/quizzes';
 
 export default function QuizPage() {
   const { id } = useParams<{ id: string }>();
   const quizId = Number(id);
+  const navigate = useNavigate();
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -16,10 +17,16 @@ export default function QuizPage() {
   useEffect(() => {
     setLoading(true);
     getQuiz(quizId)
-      .then(setQuiz)
+      .then((q) => {
+        if (q.status === 'draft') {
+          navigate(`/quiz/${q.id}/review`, { replace: true });
+          return;
+        }
+        setQuiz(q);
+      })
       .catch(() => setError('Impossible de charger ce quiz.'))
       .finally(() => setLoading(false));
-  }, [quizId]);
+  }, [quizId, navigate]);
 
   const handleSelect = (questionIndex: number, optionIndex: number) => {
     if (result) return; // déjà soumis

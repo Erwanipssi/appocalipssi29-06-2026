@@ -22,6 +22,9 @@ pypdf==5.1.0
 # Requêtes HTTP vers Ollama
 requests==2.32.3
 
+# Export PDF quiz (US-14)
+reportlab==4.2.5
+
 # Sécurité
 cryptography==44.0.0
 
