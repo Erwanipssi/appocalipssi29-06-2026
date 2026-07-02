@@ -7,10 +7,15 @@ export type Question = {
   correct_index: number;
 };
 
+export type QuizStatus = 'draft' | 'published';
+
 export type Quiz = {
   id: number;
   title: string;
   source_text: string;
+  status: QuizStatus;
+  subject: string;
+  class_name: string;
   score: number | null;
   created_at: string;
   questions: Question[];
@@ -19,6 +24,9 @@ export type Quiz = {
 export type QuizSummary = {
   id: number;
   title: string;
+  status: QuizStatus;
+  subject: string;
+  class_name: string;
   score: number | null;
   nb_questions: number;
   created_at: string;
@@ -29,6 +37,12 @@ type PaginatedQuizzes = {
   next: string | null;
   previous: string | null;
   results: QuizSummary[];
+};
+
+export type QuizFilters = {
+  subject?: string;
+  class_name?: string;
+  status?: QuizStatus;
 };
 
 export type AnswerDetail = {
@@ -44,13 +58,71 @@ export type AnswerResult = {
   details: AnswerDetail[];
 };
 
-export async function listQuizzes(): Promise<PaginatedQuizzes> {
-  const { data } = await api.get<PaginatedQuizzes>('/quizzes/');
+export type ClassEngagement = {
+  class_name: string;
+  my_quizzes: number;
+  published_quizzes: number;
+  students_participated: number;
+  average_class_score: number | null;
+  quizzes: {
+    id: number;
+    title: string;
+    subject: string;
+    status: QuizStatus;
+    attempts: number;
+    average_score: number | null;
+  }[];
+};
+
+export async function listQuizzes(filters?: QuizFilters): Promise<PaginatedQuizzes> {
+  const params = new URLSearchParams();
+  if (filters?.subject) params.set('subject', filters.subject);
+  if (filters?.class_name) params.set('class_name', filters.class_name);
+  if (filters?.status) params.set('status', filters.status);
+  const qs = params.toString();
+  const { data } = await api.get<PaginatedQuizzes>(`/quizzes/${qs ? `?${qs}` : ''}`);
   return data;
 }
 
 export async function getQuiz(id: number): Promise<Quiz> {
   const { data } = await api.get<Quiz>(`/quizzes/${id}/`);
+  return data;
+}
+
+export async function updateQuizMeta(
+  id: number,
+  meta: { title?: string; subject?: string; class_name?: string },
+): Promise<Quiz> {
+  const { data } = await api.patch<Quiz>(`/quizzes/${id}/meta/`, meta);
+  return data;
+}
+
+export async function updateQuestion(
+  quizId: number,
+  questionIndex: number,
+  patch: { prompt?: string; options?: string[]; correct_index?: number },
+): Promise<Quiz> {
+  const { data } = await api.patch<Quiz>(`/quizzes/${quizId}/questions/${questionIndex}/`, patch);
+  return data;
+}
+
+export async function publishQuiz(id: number): Promise<Quiz> {
+  const { data } = await api.post<Quiz>(`/quizzes/${id}/publish/`);
+  return data;
+}
+
+export async function exportQuizPdf(id: number, withAnswers = false): Promise<Blob> {
+  const { data } = await api.get<Blob>(`/quizzes/${id}/export-pdf/`, {
+    params: withAnswers ? { answers: '1' } : undefined,
+    responseType: 'blob',
+  });
+  return data;
+}
+
+export async function getClassEngagement(className: string): Promise<ClassEngagement> {
+  const { data } = await api.get<ClassEngagement>('/quizzes/class-engagement/', {
+    params: { class_name: className },
+  });
   return data;
 }
 
@@ -95,13 +167,11 @@ export type Mistake = {
   selected_index: number;
 };
 
-/** Statistiques de progression de l'utilisateur connecté. */
 export async function getStats(): Promise<Stats> {
   const { data } = await api.get<Stats>('/quizzes/stats/');
   return data;
 }
 
-/** Liste des questions ratées (pour la révision des erreurs). */
 export async function getMistakes(): Promise<{ count: number; mistakes: Mistake[] }> {
   const { data } = await api.get<{ count: number; mistakes: Mistake[] }>('/quizzes/mistakes/');
   return data;

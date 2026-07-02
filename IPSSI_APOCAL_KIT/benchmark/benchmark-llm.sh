@@ -10,8 +10,8 @@
 # C'est ce dernier qui tue l'UX (cf. Léa : « si ça plante/lente, je n'y reviens
 # jamais »).
 #
-# Modèles Ollama comparés par défaut (ADR J2 — choix du LLM local) :
-#   llama3.1:8b  phi3:mini  phi3.5:mini  qwen2.5:7b  llama3.2:3b  gemma2:2b
+# Modèles Ollama comparés par défaut (ADR J2 — choix du LLM local, équipe 03) :
+#   llama3.1:8b  phi3:mini  phi3.5:latest  qwen2.5:7b  llama3.2:3b  gemma2:2b
 # Fournisseur cloud optionnel : groq (GROQ_API_KEY requise).
 #
 # Dépendances : bash, curl, awk, jq.  (jq : sudo apt install jq / brew install jq)
@@ -37,7 +37,7 @@ WARMUP="${WARMUP:-1}"             # runs de chauffe non mesurés (charge le mod�
 PROVIDERS="${PROVIDERS:-ollama}"
 
 # Ollama (local) — liste des modèles à comparer (ADR J2)
-DEFAULT_OLLAMA_MODELS="llama3.1:8b phi3:mini phi3.5:mini qwen2.5:7b llama3.2:3b gemma2:2b"
+DEFAULT_OLLAMA_MODELS="llama3.1:8b phi3:mini phi3.5:latest qwen2.5:7b llama3.2:3b gemma2:2b"
 if [ -n "${OLLAMA_MODELS:-}" ]; then
     :
 elif [ -n "${OLLAMA_MODEL:-}" ]; then

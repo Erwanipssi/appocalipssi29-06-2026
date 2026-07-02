@@ -11,6 +11,10 @@ from django.db import models
 
 
 class Quiz(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Brouillon"
+        PUBLISHED = "published", "Publié"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,6 +24,24 @@ class Quiz(models.Model):
     title = models.CharField(max_length=200, help_text="Titre du cours / quiz (saisi ou déduit).")
     source_text = models.TextField(
         help_text="Texte source utilisé pour la génération (extrait PDF ou saisie).",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.DRAFT,
+        help_text="Brouillon (relecture enseignante) ou publié (passage élève).",
+    )
+    subject = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Matière (ex. Communication) — US-15.",
+    )
+    class_name = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Classe / cohorte (ex. BTS Com 1A) — US-15 / US-16.",
     )
     score = models.IntegerField(
         null=True,

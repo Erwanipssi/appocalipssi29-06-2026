@@ -95,6 +95,19 @@ if ($envLine) {
     if ($val) { $Model = $val }
 }
 
+function Read-EnvValue($name, $default) {
+    $line = Select-String -Path ".env" -Pattern "^\s*$name\s*=" -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+    if (-not $line) { return $default }
+    $val = ($line.Line -replace "^\s*$name\s*=\s*", '').Trim()
+    if ($val) { return $val }
+    return $default
+}
+
+$BackendPort = Read-EnvValue "BACKEND_HOST_PORT" "8000"
+$FrontendPort = Read-EnvValue "FRONTEND_HOST_PORT" "3000"
+$BackendUrl = "http://localhost:$BackendPort"
+
 # ---------- 2. Build ----------
 if ($Fast) {
     Write-Host "==> Mode rapide : pas de reconstruction d'image (-Fast)." -ForegroundColor Yellow
@@ -110,10 +123,10 @@ docker compose up -d --force-recreate
 Assert-LastExit "le demarrage des conteneurs a echoue."
 
 # ---------- 4. Attente sante du backend ----------
-Write-Host "==> Attente de la disponibilite du backend (http://localhost:8000)..." -ForegroundColor Cyan
+Write-Host "==> Attente de la disponibilite du backend ($BackendUrl)..." -ForegroundColor Cyan
 function Test-Backend {
     try {
-        $null = Invoke-WebRequest -UseBasicParsing -TimeoutSec 3 -Uri "http://localhost:8000/api/docs/"
+        $null = Invoke-WebRequest -UseBasicParsing -TimeoutSec 3 -Uri "$BackendUrl/api/docs/"
         return $true
     } catch {
         # Une reponse HTTP (meme 4xx/5xx) prouve que le serveur ecoute.
@@ -193,11 +206,11 @@ Write-Host "==> Etat des conteneurs :" -ForegroundColor Cyan
 docker compose ps
 Write-Host ""
 Write-Host "OK. Services accessibles :" -ForegroundColor Green
-Write-Host "  Frontend : http://localhost:3000   (ou FRONTEND_HOST_PORT du .env)"
-Write-Host "  API      : http://localhost:8000/api"
-Write-Host "  API docs : http://localhost:8000/api/docs"
+Write-Host "  Frontend : http://localhost:$FrontendPort"
+Write-Host "  API      : $BackendUrl/api"
+Write-Host "  API docs : $BackendUrl/api/docs"
 Write-Host ""
-Write-Host "  Compte de demo (si seed execute) : test / motdepasse123"
+Write-Host "  Compte de demo (si seed execute) : test@apocal.local / motdepasse123"
 Write-Host ""
 
 # ---------- 9. Logs ----------

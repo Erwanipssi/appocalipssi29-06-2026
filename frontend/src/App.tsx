@@ -13,6 +13,8 @@ import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
 import UploadPage from '@/pages/UploadPage';
 import QuizPage from '@/pages/QuizPage';
+import QuizReviewPage from '@/pages/QuizReviewPage';
+import TeacherEngagementPage from '@/pages/TeacherEngagementPage';
 import HistoryPage from '@/pages/HistoryPage';
 import ProfilePage from '@/pages/ProfilePage';
 import DashboardPage from '@/pages/DashboardPage';
@@ -54,10 +56,26 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="quiz/:id/review"
+                  element={
+                    <RequireAuth>
+                      <QuizReviewPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="quiz/:id"
                   element={
                     <RequireAuth>
                       <QuizPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="teacher/engagement"
+                  element={
+                    <RequireAuth>
+                      <TeacherEngagementPage />
                     </RequireAuth>
                   }
                 />

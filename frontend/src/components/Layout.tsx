@@ -1,12 +1,11 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useSiteConfig } from '@/contexts/SiteConfigContext';
 import VerifyEmailBanner from '@/components/VerifyEmailBanner';
+import { ThemeToggleButton } from '@/components/ThemeSelector';
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { config } = useSiteConfig();
   const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 backdrop-blur">
+      <header className="bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10 backdrop-blur">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 text-slate-900 font-bold text-lg">
             <span className="w-8 h-8 grid place-items-center bg-indigo-600 text-white rounded font-mono">
@@ -56,6 +55,12 @@ export default function Layout() {
                 <Link to="/history" className="text-slate-700 hover:text-indigo-600">
                   Historique
                 </Link>
+                <Link
+                  to="/teacher/engagement"
+                  className="text-slate-700 hover:text-indigo-600 hidden sm:inline"
+                >
+                  Classe
+                </Link>
                 {user.is_staff && (
                   <Link to="/admin" className="text-amber-600 font-medium hover:text-amber-700">
                     Admin
@@ -69,7 +74,7 @@ export default function Layout() {
                 >
                   {user.first_name || user.email}
                 </Link>
-                <ThemeToggle theme={theme} onToggle={toggleTheme} />
+                <ThemeToggleButton />
                 <button onClick={handleLogout} className="btn-secondary">
                   Déconnexion
                 </button>
@@ -82,7 +87,7 @@ export default function Layout() {
                 <Link to="/signup" className="btn-primary">
                   S'inscrire
                 </Link>
-                <ThemeToggle theme={theme} onToggle={toggleTheme} />
+                <ThemeToggleButton />
               </>
             )}
           </nav>
@@ -103,7 +108,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200 mt-12">
+      <footer className="border-t border-slate-200 dark:border-slate-700 mt-12">
         <div className="max-w-6xl mx-auto px-4 py-6 space-y-3 text-sm text-slate-500">
           {/* Liens légaux (pages à compléter par les étudiants) */}
           <nav className="flex flex-wrap gap-x-4 gap-y-1">
@@ -128,30 +133,15 @@ export default function Layout() {
                 href="https://mohamedelafrit.com/teaching/Master_Classe_Agile/cours.html"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-1 text-indigo-600 hover:underline"
+                className="ml-1 text-indigo-600 dark:text-indigo-400 hover:underline"
               >
                 Cours Agile
               </a>
             </div>
-            <div className="font-mono text-xs">CC BY-NC-SA 4.0</div>
+            <div className="font-mono text-xs">v1.0 · CC BY-NC-SA 4.0</div>
           </div>
         </div>
       </footer>
     </div>
-  );
-}
-
-/** Petit bouton de bascule clair/sombre (MVP2 — Lot 6). */
-function ThemeToggle({ theme, onToggle }: { theme: 'light' | 'dark'; onToggle: () => void }) {
-  const isDark = theme === 'dark';
-  return (
-    <button
-      onClick={onToggle}
-      className="w-9 h-9 grid place-items-center rounded-md border border-slate-300 text-slate-600 hover:bg-slate-50"
-      title={isDark ? 'Passer en mode clair' : 'Passer en mode sombre'}
-      aria-label="Basculer le thème clair/sombre"
-    >
-      {isDark ? '☀️' : '🌙'}
-    </button>
   );
 }
